@@ -8,6 +8,6 @@ The main page shows
 - Subtitles of what the robot and operator just said; their conversation
 - Images of what the robot sees or a visualisation of the robot's world model, eg. camera images, it's map, anything to make clear what is going on to the audience. 
 
-![Example screenshot](https://github.com/LoyVanBeek/vizbox/blob/master/example.png)
-
 Additionally, the server accepts HTTP POSTs to which a command sentence can be submitted. 
+
+![Example screenshot](https://github.com/LoyVanBeek/vizbox/blob/master/example.png)
