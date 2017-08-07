@@ -10,6 +10,7 @@ body {
   grid-area: content;
   position: relative; 
   align-items: stretch;
+  background-color: #eee;
 }
 
 .header {
@@ -44,4 +45,11 @@ body {
 .header,
 .footer {
   background-color: #999;
+}
+
+ul.operator {
+    list-style-image: url('sqpurple.gif');
+}
+ul {
+    list-style-image: url('https://www.seoclerk.com/pics/want52167-1vt94o1498116476.png');
 }

@@ -1,16 +1,23 @@
+<!doctype html>
 <html>
     <head>
-        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/style.css') }}">
     </head>
     <body class="main">
         <div class="wrapper">
-            <div class="box header">{{challenge}}</div>
-            <div class="box sidebar">{{story}}</div>
+            <div class="box header"><h1>{{challenge}}</h1></div>
+            <div class="box sidebar">
+                <ol id="storyline">
+                    {% for line in story %}
+                        <li>{{ line }}</li>
+                    {% endfor %}
+                </ol>
+            </div>
             <div class="box content">{{visualization}}</div>
             <div class="box footer">
                 <ul>
-                    <li>{{robot_text}}</li>
-                    <li>{{operator_text}}</li>
+                    <li>{{ operator_text }}</li>
+                    <li>{{ robot_text }}</li>
                 </ul>
             </div>
         </div>
