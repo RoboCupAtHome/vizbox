@@ -1,0 +1,47 @@
+body {
+  margin: 40px;
+}
+
+.sidebar {
+  grid-area: sidebar;
+}
+
+.content {
+  grid-area: content;
+  position: relative; 
+  align-items: stretch;
+}
+
+.header {
+  grid-area: header;
+}
+
+.footer {
+  grid-area: footer;
+}
+
+.wrapper {
+        display: grid;
+    grid-gap: 10px;
+        grid-template-columns: 25% auto;
+        grid-template-rows: 1fr 5fr 1fr;
+        grid-template-areas:
+        "header  header"
+        "sidebar content"
+        "footer  footer";
+        background-color: #fff;
+        color: #444;
+    }
+
+
+.box {
+  background-color: #444;
+  color: #fff;
+  border-radius: 5px;
+  padding: 50px;
+}
+
+.header,
+.footer {
+  background-color: #999;
+}
