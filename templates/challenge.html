@@ -2,6 +2,19 @@
 <html>
     <head>
         <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/style.css') }}">
+
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+        <script type="text/javascript" charset="utf-8">
+            var socket = io.connect('http://' + document.domain + ':' + location.port);
+            socket.on('connect', function() {
+                socket.emit('my event', {data: 'I\'m connected!'});
+            });
+            socket.on('operator_text', function (data) {
+                console.log(data);
+                // socket.emit('my other event', { my: 'data' });
+            });
+        </script>
+
     </head>
     <body class="main">
         <div class="wrapper">
