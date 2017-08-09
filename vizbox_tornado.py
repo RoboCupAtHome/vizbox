@@ -62,7 +62,8 @@ class RosMessageForwarder(WebSocketHandler):
         return True
 
     def open(self):
-        self.sub = rospy.Subscriber("/operator_text", String, self.handle_rosmsg, queue_size=100)
+        self.sub1 = rospy.Subscriber("/operator_text", String, self.handle_operator_text, queue_size=100)
+        self.sub2 = rospy.Subscriber("/robot_text", String, self.handle_robot_text, queue_size=100)
 
         if self not in ws_clients:
             ws_clients.append(self)
@@ -76,10 +77,19 @@ class RosMessageForwarder(WebSocketHandler):
         if self in ws_clients:
             ws_clients.remove(self)
 
-    def handle_rosmsg(self, rosmsg):
-        print "handle_rosmsg({})".format(rosmsg)
+    def handle_operator_text(self, rosmsg):
+        print "handle_operator_text({})".format(rosmsg)
 
-        data = {"id": 1, "value": rosmsg.data}
+        data = {"topic": "operator_text", "text": rosmsg.data}
+        data = json.dumps(data)
+
+        for c in ws_clients:
+            c.write_message(data)
+
+    def handle_robot_text(self, rosmsg):
+        print "handle_robot_text({})".format(rosmsg)
+
+        data = {"topic": "robot_text", "value": rosmsg.data}
         data = json.dumps(data)
 
         for c in ws_clients:
