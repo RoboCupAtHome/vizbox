@@ -10,7 +10,8 @@
             //    ws.send("Hello, world");
             // };
             ws.onmessage = function (evt) {
-               document.getElementById("operator_text").innerHTML=evt.data;
+               var json = JSON.parse(evt.data);
+               document.getElementById(json.label).textContent=json.text;
             };
         </script>
 

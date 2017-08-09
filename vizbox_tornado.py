@@ -80,7 +80,7 @@ class RosMessageForwarder(WebSocketHandler):
     def handle_operator_text(self, rosmsg):
         print "handle_operator_text({})".format(rosmsg)
 
-        data = {"topic": "operator_text", "text": rosmsg.data}
+        data = {"label": "operator_text", "text": rosmsg.data}
         data = json.dumps(data)
 
         for c in ws_clients:
@@ -89,7 +89,7 @@ class RosMessageForwarder(WebSocketHandler):
     def handle_robot_text(self, rosmsg):
         print "handle_robot_text({})".format(rosmsg)
 
-        data = {"topic": "robot_text", "value": rosmsg.data}
+        data = {"label": "robot_text", "text": rosmsg.data}
         data = json.dumps(data)
 
         for c in ws_clients:
