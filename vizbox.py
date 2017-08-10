@@ -29,12 +29,13 @@ class RosMessageForwarder(WebSocketHandler):
         return True
 
     def open(self):
+        # TODO: Only subscribe once for the whole application
         self.sub1 = rospy.Subscriber("/operator_text", String, self.handle_operator_text, queue_size=100)
         self.sub2 = rospy.Subscriber("/robot_text", String, self.handle_robot_text, queue_size=100)
 
         if self not in ws_clients:
             ws_clients.append(self)
-        print("WebSocket opened")
+        print("WebSocket opened. {} clients".format(len(ws_clients)))
 
     def on_message(self, message):
         self.write_message(u"You said: " + message)
@@ -43,6 +44,7 @@ class RosMessageForwarder(WebSocketHandler):
         print("WebSocket closed")
         if self in ws_clients:
             ws_clients.remove(self)
+        print("{} clients remaining".format(len(ws_clients)))
 
     def handle_operator_text(self, rosmsg):
         print "handle_operator_text({})".format(rosmsg)
