@@ -5,21 +5,24 @@ html, body {
 
 .sidebar {
     grid-area: sidebar;
+    align-content: flex-start;
 }
 
 .content {
     grid-area: content;
     position: relative; 
-    align-items: stretch;
+    align-items: center;
     background-color: #eee;
 }
 
 .header {
     grid-area: header;
+    align-content: center;
 }
 
 .footer {
     grid-area: footer;
+    align-content: center;
 }
 
 .wrapper {
@@ -47,4 +50,13 @@ html, body {
 .header,
 .footer {
     background-color: #999;
+}
+
+li.operator_text {
+    list-style-type: circle;
+    
+}
+
+li.robot_text {
+    list-style-type: square;
 }
