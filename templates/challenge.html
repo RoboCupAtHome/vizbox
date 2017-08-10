@@ -10,8 +10,14 @@
             //    ws.send("Hello, world");
             // };
             ws.onmessage = function (evt) {
-               var json = JSON.parse(evt.data);
-               document.getElementById(json.label).textContent=json.text;
+                var json = JSON.parse(evt.data);
+                // document.getElementById(json.label).textContent=json.text;
+
+                var ul = document.getElementById("subtitles");
+                var li = document.createElement("li");
+                li.appendChild(document.createTextNode(json.text));
+                li.setAttribute("class", json.label); // added line
+                ul.appendChild(li);
             };
         </script>
 
@@ -28,9 +34,9 @@
             </div>
             <div class="box content">{{visualization}}</div>
             <div class="box footer">
-                <ul>
-                    <li id="operator_text">Operator</li>
-                    <li id="robot_text">Robot</li>
+                <ul id="subtitles">
+<!--                     <li class="operator_text">Operator</li>
+                    <li class="robot_text">Robot</li> -->
                 </ul>
             </div>
         </div>
