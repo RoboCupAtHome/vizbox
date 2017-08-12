@@ -1,38 +1,62 @@
 html, body {
     height: 100%;
-    margin: 0;
+    margin: 5px;
+    font-family: monospace;
+    font-size: 20pt;
 }
+/*
+fresh: #4abdac;
+vermillion: #fc4a1a;
+sunshine: #f7b733;
+clean: #dfdce3;
+*/
+
+/*
+From https://www.awwwards.com/sites/van-gogh-museum
+sunflowers: #ffd728
+starry: #0188C0;
+irises: #00895F;
+evening: #312F32;
+#012F7F
+*/
 
 .sidebar {
     grid-area: sidebar;
     align-content: flex-start;
+    background-color: #ffd728;
+    color: #312F32;
 }
 
 .content {
     grid-area: content;
     position: relative; 
     align-items: center;
-    background-color: #eee;
+    background-color: #0188C0;
+    color: #fff
 }
 
 .header {
     grid-area: header;
     align-content: center;
+    background-color: #ffd728;
+    color: #312F32;
 }
 
 .footer {
     grid-area: footer;
     align-content: center;
+    background-color: #0188C0;
+    color: #fff
 }
 
 .wrapper {
     min-height: 100%;
     display: grid;
-    grid-gap: 10px;
+    grid-gap: 5px;
     grid-template-columns: 25% auto;
     grid-template-rows: 1fr 3fr 1fr;
     grid-template-areas:
-    "header  header"
+    "header  content"
     "sidebar content"
     "footer  footer";
     background-color: #fff;
@@ -41,22 +65,19 @@ html, body {
 
 
 .box {
-    background-color: #444;
-    color: #fff;
-    border-radius: 5px;
-    padding: 50px;
-}
-
-.header,
-.footer {
-    background-color: #999;
+    /*color: #fff;*/
+    padding: 5px;
 }
 
 li.operator_text {
     list-style-type: circle;
-    
+
 }
 
 li.robot_text {
     list-style-type: square;
+}
+
+li.activated {
+    font-weight: bolder;
 }
