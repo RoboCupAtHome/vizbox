@@ -54,7 +54,7 @@ evening: #312F32;
     display: grid;
     grid-gap: 5px;
     grid-template-columns: 25% auto;
-    grid-template-rows: 1fr 3fr 1fr;
+    grid-template-rows: 200px auto 200px;
     grid-template-areas:
     "header  content"
     "sidebar content"

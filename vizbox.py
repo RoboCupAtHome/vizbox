@@ -7,7 +7,7 @@ from tornado.ioloop import IOLoop
 from tornado.web import Application, RequestHandler, StaticFileHandler
 from tornado.websocket import WebSocketHandler
 
-from std_msgs.msg import String
+from std_msgs.msg import String, UInt32
 
 import json
 
@@ -18,7 +18,7 @@ class ChallengeHandler(RequestHandler):
         print "Rendering..."
         self.render("challenge.html",
                     challenge="Help me Carry",
-                    story=["Follow to car", "Take bag", "Guide to car"],
+                    story=["Get operator", "Follow to car", "Take bag", "Hear destination", "Find human", "Guide to car"],
                     robot_text="OK, I will bring the bag to the kitchen",
                     operator_text="Bring the bag to the kitchen",
                     visualization="Insert robot doing awesome stuff"
@@ -32,6 +32,7 @@ class RosMessageForwarder(WebSocketHandler):
         # TODO: Only subscribe once for the whole application
         self.sub1 = rospy.Subscriber("/operator_text", String, self.handle_operator_text, queue_size=100)
         self.sub2 = rospy.Subscriber("/robot_text", String, self.handle_robot_text, queue_size=100)
+        self.sub2 = rospy.Subscriber("/challenge_step", UInt32, self.handle_challenge_step, queue_size=100)
 
         if self not in ws_clients:
             ws_clients.append(self)
@@ -59,6 +60,15 @@ class RosMessageForwarder(WebSocketHandler):
         print "handle_robot_text({})".format(rosmsg)
 
         data = {"label": "robot_text", "text": rosmsg.data}
+        data = json.dumps(data)
+
+        for c in ws_clients:
+            c.write_message(data)
+
+    def handle_challenge_step(self, rosmsg):
+        print "handle_challenge_step({})".format(rosmsg)
+
+        data = {"label": "challenge_step", "index": rosmsg.data}
         data = json.dumps(data)
 
         for c in ws_clients:
