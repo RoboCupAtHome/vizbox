@@ -13,7 +13,36 @@ import json
 
 ws_clients = []
 
-class RosBackend(object):
+def call_callbacks_in(cb_list, converter):
+    def callback(message):
+        converted = converter(message)
+        for cb in cb_list:
+            cb(converted)
+
+    return callback
+
+
+class Backend(object):
+    @staticmethod
+    def get_instance():
+        raise NotImplementedError()
+
+    def __init__(self):
+        self.on_operator_text = []
+        self.on_robot_text = []
+        self.on_challenge_step = []
+
+    def handle_operator_text(self, *args, **kwargs):
+        raise NotImplementedError()
+
+    def handle_robot_text(self, *args, **kwargs):
+        raise NotImplementedError()
+
+    def handle_challenge_step(self, *args, **kwargs):
+        raise NotImplementedError()
+
+
+class RosBackend(Backend):
     __instance = None
 
     @staticmethod
@@ -23,32 +52,17 @@ class RosBackend(object):
         return RosBackend.__instance
 
     def __init__(self):
+        Backend.__init__(self)
         rospy.init_node("vizbox", log_level=rospy.INFO)
         print "Node initialized"
 
         rospy.on_shutdown(handle_shutdown)
 
-        self.op_sub = rospy.Subscriber("operator_text", String, self.handle_operator_text, queue_size=100)
-        self.robot_sub = rospy.Subscriber("robot_text", String, self.handle_robot_text, queue_size=100)
-        self.step_sub = rospy.Subscriber("challenge_step", UInt32, self.handle_challenge_step, queue_size=100)
+        self.op_sub = rospy.Subscriber("operator_text", String, call_callbacks_in(self.on_operator_text, lambda rosmsg: rosmsg.data), queue_size=100)
+        self.robot_sub = rospy.Subscriber("robot_text", String, call_callbacks_in(self.on_robot_text, lambda rosmsg: rosmsg.data), queue_size=100)
+        self.step_sub = rospy.Subscriber("challenge_step", UInt32, call_callbacks_in(self.on_challenge_step, lambda rosmsg: rosmsg.data), queue_size=100)
 
         self.cmd_pub = rospy.Publisher("command", String, queue_size=1)
-
-        self.on_operator_text = []
-        self.on_robot_text = []
-        self.on_challenge_step = []
-
-    def handle_operator_text(self, rosmsg):
-        for handler in self.on_operator_text:
-            handler(rosmsg.data)
-
-    def handle_robot_text(self, rosmsg):
-        for handler in self.on_robot_text:
-            handler(rosmsg.data)
-
-    def handle_challenge_step(self, rosmsg):
-        for handler in self.on_challenge_step:
-            handler(rosmsg.data)
 
 class ChallengeHandler(RequestHandler):
     def get(self):
