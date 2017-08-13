@@ -22,7 +22,7 @@ def call_callbacks_in(cb_list, converter):
     return callback
 
 
-class Backend(object):
+class BackendBase(object):
     @staticmethod
     def get_instance():
         raise NotImplementedError()
@@ -32,17 +32,29 @@ class Backend(object):
         self.on_robot_text = []
         self.on_challenge_step = []
 
-    def handle_operator_text(self, *args, **kwargs):
+    def attach_operator_text(self, callback):
+        self.on_operator_text += [callback]
+
+    def attach_robot_text(self, callback):
+        self.on_robot_text += [callback]
+
+    def attach_challenge_step(self, callback):
+        self.on_challenge_step += [callback]
+
+    def detach_operator_text(self, callback):
+        self.on_operator_text -= [callback]
+
+    def detach_robot_text(self, callback):
+        self.on_robot_text -= [callback]
+
+    def detach_challenge_step(self, callback):
+        self.on_challenge_step -= [callback]
+
+    def accept_command(self, command_text):
         raise NotImplementedError()
 
-    def handle_robot_text(self, *args, **kwargs):
-        raise NotImplementedError()
 
-    def handle_challenge_step(self, *args, **kwargs):
-        raise NotImplementedError()
-
-
-class RosBackend(Backend):
+class RosBackend(BackendBase):
     __instance = None
 
     @staticmethod
@@ -52,7 +64,7 @@ class RosBackend(Backend):
         return RosBackend.__instance
 
     def __init__(self):
-        Backend.__init__(self)
+        super(RosBackend, self).__init__()
         rospy.init_node("vizbox", log_level=rospy.INFO)
         print "Node initialized"
 
@@ -63,6 +75,10 @@ class RosBackend(Backend):
         self.step_sub = rospy.Subscriber("challenge_step", UInt32, call_callbacks_in(self.on_challenge_step, lambda rosmsg: rosmsg.data), queue_size=100)
 
         self.cmd_pub = rospy.Publisher("command", String, queue_size=1)
+
+    def accept_command(self, command_text):
+        self.cmd_pub.publish(command_text)
+
 
 class ChallengeHandler(RequestHandler):
     def get(self):
@@ -75,21 +91,30 @@ class ChallengeHandler(RequestHandler):
                     visualization="Insert robot doing awesome stuff"
                     )
 
+
 class CommandReceiver(RequestHandler):
+    def initialize(self, backend):
+        self.backend = backend
+
     def post(self, *args, **kwargs):
         command = self.get_argument("command")
-        RosBackend.get_instance().cmd_pub.publish(command)
+        self.backend.accept_command(command)
         print(command)
 
 
-class RosMessageForwarder(WebSocketHandler):
+class MessageForwarder(WebSocketHandler):
+
+    def __init__(self, *args, **kwargs):
+        self.backend = kwargs.pop('backend')
+        super(MessageForwarder, self).__init__(*args, **kwargs)
+
     def check_origin(self, origin):
         return True
 
     def open(self):
-        RosBackend.get_instance().on_operator_text += [self.handle_operator_text]
-        RosBackend.get_instance().on_robot_text += [self.handle_robot_text]
-        RosBackend.get_instance().on_challenge_step += [self.handle_challenge_step]
+        self.backend.attach_operator_text(self.handle_operator_text)
+        self.backend.attach_robot_text(self.handle_robot_text)
+        self.backend.attach_challenge_step(self.handle_challenge_step)
 
         if self not in ws_clients:
             ws_clients.append(self)
@@ -104,9 +129,9 @@ class RosMessageForwarder(WebSocketHandler):
             ws_clients.remove(self)
         print("{} clients remaining".format(len(ws_clients)))
 
-        RosBackend.get_instance().on_operator_text -= [self.handle_operator_text]
-        RosBackend.get_instance().on_robot_text -= [self.handle_robot_text]
-        RosBackend.get_instance().on_challenge_step -= [self.handle_challenge_step]
+        self.backend.detach_operator_text(self.handle_operator_text)
+        self.backend.detach_robot_text(self.handle_robot_text)
+        self.backend.detach_challenge_step(self.handle_challenge_step)
 
     def handle_operator_text(self, text):
         print "handle_operator_text({})".format(text)
@@ -135,11 +160,12 @@ class RosMessageForwarder(WebSocketHandler):
         for c in ws_clients:
             c.write_message(data)
 
+
 def handle_shutdown(*arg, **kwargs):
     IOLoop.instance().stop()
 
 if __name__ == "__main__":
-    RosBackend.get_instance()
+    backend = RosBackend.get_instance()
 
     signal.signal(signal.SIGINT, handle_shutdown)
     signal.signal(signal.SIGQUIT, handle_shutdown) # SIGQUIT is send by our supervisord to stop this server.
@@ -147,9 +173,9 @@ if __name__ == "__main__":
     print "Shutdown handler connected"
 
     app = Application([
-        (r"/ws", RosMessageForwarder),
+        (r"/ws", MessageForwarder, {'backend': backend}),
         (r'/', ChallengeHandler),
-        (r'/command', CommandReceiver),
+        (r'/command', CommandReceiver, {'backend': backend}),
         (r'/static/(.*)', StaticFileHandler, {'path': 'static/'})],
     debug=True,
     template_path="templates")
