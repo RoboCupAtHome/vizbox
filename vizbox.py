@@ -13,6 +13,40 @@ import json
 
 ws_clients = []
 
+class RosBackend(object):
+    __instance = None
+
+    @staticmethod
+    def get_instance():
+        if not RosBackend.__instance:
+            RosBackend.__instance = RosBackend()
+        return RosBackend.__instance
+
+    def __init__(self):
+        rospy.init_node("vizbox", log_level=rospy.INFO)
+        print "Node initialized"
+
+        rospy.on_shutdown(handle_shutdown)
+
+        self.op_sub = rospy.Subscriber("operator_text", String, self.handle_operator_text, queue_size=100)
+        self.robot_sub = rospy.Subscriber("robot_text", String, self.handle_robot_text, queue_size=100)
+        self.step_sub = rospy.Subscriber("challenge_step", UInt32, self.handle_challenge_step, queue_size=100)
+
+        self.cmd_pub = rospy.Publisher("command", String)
+
+        self.on_operator_text = []
+        self.on_robot_text = []
+        self.on_challenge_step = []
+
+    def handle_operator_text(self, rosmsg):
+        pass
+
+    def handle_robot_text(self, rosmsg):
+        pass
+
+    def handle_challenge_step(self, rosmsg):
+        pass
+
 class ChallengeHandler(RequestHandler):
     def get(self):
         print "Rendering..."
@@ -26,9 +60,8 @@ class ChallengeHandler(RequestHandler):
 
 class CommandReceiver(RequestHandler):
     def post(self, *args, **kwargs):
-        pub = rospy.Publisher("command", String)
         command = self.get_argument("command")
-        pub.publish(command)
+        RosBackend.get_instance().cmd_pub.publish(command)
         print(command)
 
 
@@ -40,7 +73,7 @@ class RosMessageForwarder(WebSocketHandler):
         # TODO: Only subscribe once for the whole application
         self.sub1 = rospy.Subscriber("operator_text", String, self.handle_operator_text, queue_size=100)
         self.sub2 = rospy.Subscriber("robot_text", String, self.handle_robot_text, queue_size=100)
-        self.sub2 = rospy.Subscriber("challenge_step", UInt32, self.handle_challenge_step, queue_size=100)
+        self.sub3 = rospy.Subscriber("challenge_step", UInt32, self.handle_challenge_step, queue_size=100)
 
         if self not in ws_clients:
             ws_clients.append(self)
@@ -86,10 +119,6 @@ def handle_shutdown(*arg, **kwargs):
     IOLoop.instance().stop()
 
 if __name__ == "__main__":
-    rospy.init_node("vizbox", log_level=rospy.INFO)
-    print "Node initialized"
-
-    rospy.on_shutdown(handle_shutdown)
     signal.signal(signal.SIGINT, handle_shutdown)
     signal.signal(signal.SIGQUIT, handle_shutdown) # SIGQUIT is send by our supervisord to stop this server.
     signal.signal(signal.SIGTERM, handle_shutdown) # SIGTERM is send by Ctrl+C or supervisord's default.
