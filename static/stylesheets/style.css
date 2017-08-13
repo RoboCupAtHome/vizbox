@@ -47,7 +47,7 @@ evening: #312F32;
     align-content: center;
     background-color: #0188C0;
     color: #fff;
-    overflow: scroll;
+    overflow-y: auto;
 }
 
 .wrapper {
