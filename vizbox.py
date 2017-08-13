@@ -11,8 +11,6 @@ from std_msgs.msg import String, UInt32
 
 import json
 
-ws_clients = []
-
 def call_callbacks_in(cb_list, converter):
     def callback(message):
         converted = converter(message)
@@ -42,13 +40,13 @@ class BackendBase(object):
         self.on_challenge_step += [callback]
 
     def detach_operator_text(self, callback):
-        self.on_operator_text -= [callback]
+        self.on_operator_text.remove(callback)
 
     def detach_robot_text(self, callback):
-        self.on_robot_text -= [callback]
+        self.on_robot_text.remove(callback)
 
     def detach_challenge_step(self, callback):
-        self.on_challenge_step -= [callback]
+        self.on_challenge_step.remove(callback)
 
     def accept_command(self, command_text):
         raise NotImplementedError()
@@ -116,19 +114,13 @@ class MessageForwarder(WebSocketHandler):
         self.backend.attach_robot_text(self.handle_robot_text)
         self.backend.attach_challenge_step(self.handle_challenge_step)
 
-        if self not in ws_clients:
-            ws_clients.append(self)
-        print("WebSocket opened. {} clients".format(len(ws_clients)))
+        print("WebSocket opened")
 
     def on_message(self, message):
         self.write_message(u"You said: " + message)
 
     def on_close(self):
         print("WebSocket closed")
-        if self in ws_clients:
-            ws_clients.remove(self)
-        print("{} clients remaining".format(len(ws_clients)))
-
         self.backend.detach_operator_text(self.handle_operator_text)
         self.backend.detach_robot_text(self.handle_robot_text)
         self.backend.detach_challenge_step(self.handle_challenge_step)
@@ -139,8 +131,7 @@ class MessageForwarder(WebSocketHandler):
         data = {"label": "operator_text", "text": text}
         data = json.dumps(data)
 
-        for c in ws_clients:
-            c.write_message(data)
+        self.write_message(data)
 
     def handle_robot_text(self, text):
         print "handle_robot_text({})".format(text)
@@ -148,8 +139,7 @@ class MessageForwarder(WebSocketHandler):
         data = {"label": "robot_text", "text": text}
         data = json.dumps(data)
 
-        for c in ws_clients:
-            c.write_message(data)
+        self.write_message(data)
 
     def handle_challenge_step(self, step):
         print "handle_challenge_step({})".format(step)
@@ -157,8 +147,7 @@ class MessageForwarder(WebSocketHandler):
         data = {"label": "challenge_step", "index": step}
         data = json.dumps(data)
 
-        for c in ws_clients:
-            c.write_message(data)
+        self.write_message(data)
 
 
 def handle_shutdown(*arg, **kwargs):
