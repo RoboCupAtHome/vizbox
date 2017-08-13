@@ -166,6 +166,7 @@ if __name__ == "__main__":
         (r'/', ChallengeHandler),
         (r'/command', CommandReceiver, {'backend': backend}),
         (r'/static/(.*)', StaticFileHandler, {'path': 'static/'})],
+        (r'/(favicon\.ico)', StaticFileHandler, {'path': 'static/favicon.ico'}),
     debug=True,
     template_path="templates")
 
