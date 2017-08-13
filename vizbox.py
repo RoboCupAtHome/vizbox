@@ -32,20 +32,23 @@ class RosBackend(object):
         self.robot_sub = rospy.Subscriber("robot_text", String, self.handle_robot_text, queue_size=100)
         self.step_sub = rospy.Subscriber("challenge_step", UInt32, self.handle_challenge_step, queue_size=100)
 
-        self.cmd_pub = rospy.Publisher("command", String)
+        self.cmd_pub = rospy.Publisher("command", String, queue_size=1)
 
         self.on_operator_text = []
         self.on_robot_text = []
         self.on_challenge_step = []
 
     def handle_operator_text(self, rosmsg):
-        pass
+        for handler in self.on_operator_text:
+            handler(rosmsg.data)
 
     def handle_robot_text(self, rosmsg):
-        pass
+        for handler in self.on_robot_text:
+            handler(rosmsg.data)
 
     def handle_challenge_step(self, rosmsg):
-        pass
+        for handler in self.on_challenge_step:
+            handler(rosmsg.data)
 
 class ChallengeHandler(RequestHandler):
     def get(self):
@@ -70,10 +73,9 @@ class RosMessageForwarder(WebSocketHandler):
         return True
 
     def open(self):
-        # TODO: Only subscribe once for the whole application
-        self.sub1 = rospy.Subscriber("operator_text", String, self.handle_operator_text, queue_size=100)
-        self.sub2 = rospy.Subscriber("robot_text", String, self.handle_robot_text, queue_size=100)
-        self.sub3 = rospy.Subscriber("challenge_step", UInt32, self.handle_challenge_step, queue_size=100)
+        RosBackend.get_instance().on_operator_text += [self.handle_operator_text]
+        RosBackend.get_instance().on_robot_text += [self.handle_robot_text]
+        RosBackend.get_instance().on_challenge_step += [self.handle_challenge_step]
 
         if self not in ws_clients:
             ws_clients.append(self)
@@ -88,28 +90,32 @@ class RosMessageForwarder(WebSocketHandler):
             ws_clients.remove(self)
         print("{} clients remaining".format(len(ws_clients)))
 
-    def handle_operator_text(self, rosmsg):
-        print "handle_operator_text({})".format(rosmsg)
+        RosBackend.get_instance().on_operator_text -= [self.handle_operator_text]
+        RosBackend.get_instance().on_robot_text -= [self.handle_robot_text]
+        RosBackend.get_instance().on_challenge_step -= [self.handle_challenge_step]
 
-        data = {"label": "operator_text", "text": rosmsg.data}
+    def handle_operator_text(self, text):
+        print "handle_operator_text({})".format(text)
+
+        data = {"label": "operator_text", "text": text}
         data = json.dumps(data)
 
         for c in ws_clients:
             c.write_message(data)
 
-    def handle_robot_text(self, rosmsg):
-        print "handle_robot_text({})".format(rosmsg)
+    def handle_robot_text(self, text):
+        print "handle_robot_text({})".format(text)
 
-        data = {"label": "robot_text", "text": rosmsg.data}
+        data = {"label": "robot_text", "text": text}
         data = json.dumps(data)
 
         for c in ws_clients:
             c.write_message(data)
 
-    def handle_challenge_step(self, rosmsg):
-        print "handle_challenge_step({})".format(rosmsg)
+    def handle_challenge_step(self, step):
+        print "handle_challenge_step({})".format(step)
 
-        data = {"label": "challenge_step", "index": rosmsg.data}
+        data = {"label": "challenge_step", "index": step}
         data = json.dumps(data)
 
         for c in ws_clients:
@@ -119,6 +125,8 @@ def handle_shutdown(*arg, **kwargs):
     IOLoop.instance().stop()
 
 if __name__ == "__main__":
+    RosBackend.get_instance()
+
     signal.signal(signal.SIGINT, handle_shutdown)
     signal.signal(signal.SIGQUIT, handle_shutdown) # SIGQUIT is send by our supervisord to stop this server.
     signal.signal(signal.SIGTERM, handle_shutdown) # SIGTERM is send by Ctrl+C or supervisord's default.
