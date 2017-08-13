@@ -21,6 +21,9 @@
                         txt.appendChild(document.createTextNode(json.text));
                         txt.setAttribute("class", json.label); // added line
                         subtitles.appendChild(txt);
+                        
+                        var footer = $(".footer");
+                        footer.animate({ scrollTop: footer.prop("scrollHeight") - footer.height() }, 100);
                         break
                     case "challenge_step":
                         $next_active = $('#storyline li').eq(json.index)

@@ -46,7 +46,8 @@ evening: #312F32;
     grid-area: footer;
     align-content: center;
     background-color: #0188C0;
-    color: #fff
+    color: #fff;
+    overflow: scroll;
 }
 
 .wrapper {
@@ -62,7 +63,6 @@ evening: #312F32;
     background-color: #fff;
     color: #444;
 }
-
 
 .box {
     /*color: #fff;*/
