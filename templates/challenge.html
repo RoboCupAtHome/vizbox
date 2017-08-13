@@ -29,6 +29,11 @@
                         break
                 }
             };
+            function send_to_ws() {
+                var formdata = $( "#command_enter_form" ).serialize();
+                ws.send(formdata);
+            }
+            $("#submit").on("click", send_to_ws);
         </script>
 
     </head>
@@ -48,6 +53,11 @@
 <!--                     <li class="operator_text">Operator</li>
                     <li class="robot_text">Robot</li> -->
                 </ul>
+                <form id="command_enter_form">
+                  Command:
+                  <input type="text" name="command" value="">
+                  <input type="submit" value="Submit" id="submit">
+                </form>
             </div>
         </div>
     </body>

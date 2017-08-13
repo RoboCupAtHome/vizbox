@@ -24,15 +24,23 @@ class ChallengeHandler(RequestHandler):
                     visualization="Insert robot doing awesome stuff"
                     )
 
+class CommandReceiver(RequestHandler):
+    def post(self, *args, **kwargs):
+        pub = rospy.Publisher("command", String)
+        command = self.get_argument("command")
+        pub.publish(command)
+        print(command)
+
+
 class RosMessageForwarder(WebSocketHandler):
     def check_origin(self, origin):
         return True
 
     def open(self):
         # TODO: Only subscribe once for the whole application
-        self.sub1 = rospy.Subscriber("/operator_text", String, self.handle_operator_text, queue_size=100)
-        self.sub2 = rospy.Subscriber("/robot_text", String, self.handle_robot_text, queue_size=100)
-        self.sub2 = rospy.Subscriber("/challenge_step", UInt32, self.handle_challenge_step, queue_size=100)
+        self.sub1 = rospy.Subscriber("operator_text", String, self.handle_operator_text, queue_size=100)
+        self.sub2 = rospy.Subscriber("robot_text", String, self.handle_robot_text, queue_size=100)
+        self.sub2 = rospy.Subscriber("challenge_step", UInt32, self.handle_challenge_step, queue_size=100)
 
         if self not in ws_clients:
             ws_clients.append(self)
@@ -90,6 +98,7 @@ if __name__ == "__main__":
     app = Application([
         (r"/ws", RosMessageForwarder),
         (r'/', ChallengeHandler),
+        (r'/command', CommandReceiver),
         (r'/static/(.*)', StaticFileHandler, {'path': 'static/'})],
     debug=True,
     template_path="templates")
