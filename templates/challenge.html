@@ -37,7 +37,6 @@ var DUMMY ="iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAASFBMVEUAAAAAAADMzMz/
                     case "image":
                         var image = "data:image/png;base64," + json.image;
                         console.log("Got image: '"+image+"'")
-                        // $("#visualization_img").src = RECORD_ON;
                         document.getElementById('visualization_img').setAttribute('src', image);
                         break;
                 }
