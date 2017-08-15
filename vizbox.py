@@ -21,7 +21,7 @@ class ChallengeHandler(RequestHandler):
                     story=["Get operator", "Follow to car", "Take bag", "Hear destination", "Find human", "Guide to car"],
                     robot_text="OK, I will bring the bag to the kitchen",
                     operator_text="Bring the bag to the kitchen",
-                    visualization="Insert robot doing awesome stuff"
+                    visualization="Robot camera image"
                     )
 
 
