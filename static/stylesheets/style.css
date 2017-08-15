@@ -1,6 +1,8 @@
 html, body {
     height: 100%;
-    margin: 5px;
+    width: 100%
+    margin: 0px;
+    padding: 0px;
     font-family: monospace;
     font-size: 20pt;
 }
@@ -23,32 +25,30 @@ evening: #312F32;
 .sidebar {
     grid-area: sidebar;
     align-content: flex-start;
-    background-color: #ffd728;
-    color: #312F32;
+    background-color: #30426A;
+    color: #E9EDEE;
+    padding: 10px;
 }
 
 .content {
     grid-area: content;
     position: relative; 
     align-items: center;
-    background-color: #0188C0;
-    color: #fff
-}
+    background-color: #F3F3F3;
+    color: #312F32;}
 
 .header {
     grid-area: header;
     align-content: center;
-    background-color: #ffd728;
-    color: #312F32;
-}
+    background-color: #2C3E62;
+    color: #E9EDEE;}
 
 .footer {
     grid-area: footer;
     align-content: center;
-    background-color: #0188C0;
-    color: #fff;
-    overflow-y: auto;
-}
+    background-color: #30426A;
+    color: #E9EDEE;
+    overflow-y: auto;}
 
 .wrapper {
     min-height: 100%;
@@ -60,9 +60,8 @@ evening: #312F32;
     "header  content"
     "sidebar content"
     "footer  footer";
-    background-color: #fff;
-    color: #444;
-}
+    background-color: #F3F3F3;
+    color: #312F32;}
 
 .box {
     /*color: #fff;*/
