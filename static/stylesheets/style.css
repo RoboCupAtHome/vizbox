@@ -22,6 +22,10 @@ evening: #312F32;
 #012F7F
 */
 
+* {
+    margin: 0;
+}
+
 .sidebar {
     grid-area: sidebar;
     align-content: flex-start;
@@ -35,25 +39,28 @@ evening: #312F32;
     position: relative; 
     align-items: center;
     background-color: #F3F3F3;
-    color: #312F32;}
+    color: #312F32;
+}
 
 .header {
     grid-area: header;
     align-content: center;
     background-color: #2C3E62;
-    color: #E9EDEE;}
+    color: #E9EDEE;
+}
 
 .footer {
     grid-area: footer;
     align-content: center;
     background-color: #30426A;
     color: #E9EDEE;
-    overflow-y: auto;}
+    overflow-y: auto;
+}
 
 .wrapper {
     min-height: 100%;
     display: grid;
-    grid-gap: 5px;
+    /*grid-gap: 5px;*/
     grid-template-columns: 25% auto;
     grid-template-rows: 200px auto 200px;
     grid-template-areas:
@@ -61,16 +68,16 @@ evening: #312F32;
     "sidebar content"
     "footer  footer";
     background-color: #F3F3F3;
-    color: #312F32;}
+    color: #312F32;
+}
 
 .box {
     /*color: #fff;*/
-    padding: 5px;
+    /*padding: 5px;*/
 }
 
 li.operator_text {
     list-style-type: circle;
-
 }
 
 li.robot_text {
