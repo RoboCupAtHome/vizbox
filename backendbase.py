@@ -16,6 +16,7 @@ class BackendBase(object):
         self.on_operator_text = []
         self.on_robot_text = []
         self.on_challenge_step = []
+        self.on_image = []
 
     def attach_operator_text(self, callback):
         self.on_operator_text += [callback]
@@ -38,4 +39,18 @@ class BackendBase(object):
     def accept_command(self, command_text):
         raise NotImplementedError()
 
+    def attach_image(self, callback):
+        """
+        Add a callback for when an Image is received
+        :param callback: function accepting a base64-encoded image
+        :return:
+        """
+        self.on_image += [callback]
 
+    def detach_image(self, callback):
+        """
+        Remove a callback from when an Image is received
+        :param callback:
+        :return:
+        """
+        self.on_image.remove(callback)
