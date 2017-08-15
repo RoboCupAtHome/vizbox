@@ -1,84 +1,15 @@
 #! /usr/bin/env python
 
+import json
 import signal
-import rospy
-
 from socket import error
 
+import rospy
 from tornado.ioloop import IOLoop
 from tornado.web import Application, RequestHandler, StaticFileHandler
 from tornado.websocket import WebSocketHandler
 
-import json
-
-def call_callbacks_in(cb_list, converter):
-    def callback(message):
-        converted = converter(message)
-        for cb in cb_list:
-            cb(converted)
-
-    return callback
-
-
-class BackendBase(object):
-    @staticmethod
-    def get_instance():
-        raise NotImplementedError()
-
-    def __init__(self):
-        self.on_operator_text = []
-        self.on_robot_text = []
-        self.on_challenge_step = []
-
-    def attach_operator_text(self, callback):
-        self.on_operator_text += [callback]
-
-    def attach_robot_text(self, callback):
-        self.on_robot_text += [callback]
-
-    def attach_challenge_step(self, callback):
-        self.on_challenge_step += [callback]
-
-    def detach_operator_text(self, callback):
-        self.on_operator_text.remove(callback)
-
-    def detach_robot_text(self, callback):
-        self.on_robot_text.remove(callback)
-
-    def detach_challenge_step(self, callback):
-        self.on_challenge_step.remove(callback)
-
-    def accept_command(self, command_text):
-        raise NotImplementedError()
-
-
-class RosBackend(BackendBase):
-    __instance = None
-
-    @staticmethod
-    def get_instance():
-        if not RosBackend.__instance:
-            RosBackend.__instance = RosBackend()
-        return RosBackend.__instance
-
-    def __init__(self):
-        import rospy
-        from std_msgs.msg import String, UInt32
-
-        super(RosBackend, self).__init__()
-        rospy.init_node("vizbox", log_level=rospy.INFO)
-        print "Node initialized"
-
-        rospy.on_shutdown(handle_shutdown)
-
-        self.op_sub = rospy.Subscriber("operator_text", String, call_callbacks_in(self.on_operator_text, lambda rosmsg: rosmsg.data), queue_size=100)
-        self.robot_sub = rospy.Subscriber("robot_text", String, call_callbacks_in(self.on_robot_text, lambda rosmsg: rosmsg.data), queue_size=100)
-        self.step_sub = rospy.Subscriber("challenge_step", UInt32, call_callbacks_in(self.on_challenge_step, lambda rosmsg: rosmsg.data), queue_size=100)
-
-        self.cmd_pub = rospy.Publisher("command", String, queue_size=1)
-
-    def accept_command(self, command_text):
-        self.cmd_pub.publish(command_text)
+from rosbackend import RosBackend
 
 
 class ChallengeHandler(RequestHandler):
@@ -157,7 +88,7 @@ def handle_shutdown(*arg, **kwargs):
     IOLoop.instance().stop()
 
 if __name__ == "__main__":
-    backend = RosBackend.get_instance()
+    backend = RosBackend.get_instance(shutdown_hook=handle_shutdown)
 
     signal.signal(signal.SIGINT, handle_shutdown)
     signal.signal(signal.SIGQUIT, handle_shutdown) # SIGQUIT is send by our supervisord to stop this server.
