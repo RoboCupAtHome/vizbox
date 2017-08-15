@@ -30,6 +30,9 @@
                         $next_active.addClass('activated');
                         $next_active.prev().removeClass('activated');
                         break
+                    case "image":
+                        $("#visualization_img").src = "data:image/png;base64," + window.btoa(json.image);
+                        break;
                 }
             };
             function send_to_ws() {
@@ -50,7 +53,12 @@
                     {% end %}
                 </ol>
             </div>
-            <div class="box content">{{visualization}}</div>
+            <div class="box content">
+                {{visualization}}
+                <br>
+                <img    id="visualization_img"
+                        src="https://www.w3schools.com/html/html5.gif">
+            </div>
             <div class="box footer">
                 <ul id="subtitles">
 <!--                     <li class="operator_text">Operator</li>
