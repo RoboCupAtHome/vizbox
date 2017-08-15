@@ -9,8 +9,6 @@ from tornado.ioloop import IOLoop
 from tornado.web import Application, RequestHandler, StaticFileHandler
 from tornado.websocket import WebSocketHandler
 
-from std_msgs.msg import String, UInt32
-
 import json
 
 def call_callbacks_in(cb_list, converter):
@@ -64,6 +62,9 @@ class RosBackend(BackendBase):
         return RosBackend.__instance
 
     def __init__(self):
+        import rospy
+        from std_msgs.msg import String, UInt32
+
         super(RosBackend, self).__init__()
         rospy.init_node("vizbox", log_level=rospy.INFO)
         print "Node initialized"
