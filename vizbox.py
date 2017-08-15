@@ -9,6 +9,7 @@ from tornado.ioloop import IOLoop
 from tornado.web import Application, RequestHandler, StaticFileHandler
 from tornado.websocket import WebSocketHandler
 
+from backendbase import BackendBase
 from rosbackend import RosBackend
 
 
@@ -44,9 +45,11 @@ class MessageForwarder(WebSocketHandler):
         return True
 
     def open(self):
+        print("opening WebSocket")
         self.backend.attach_operator_text(self.handle_operator_text)
         self.backend.attach_robot_text(self.handle_robot_text)
         self.backend.attach_challenge_step(self.handle_challenge_step)
+        self.backend.attach_image(self.handle_image)
 
         print("WebSocket opened")
 
@@ -58,6 +61,7 @@ class MessageForwarder(WebSocketHandler):
         self.backend.detach_operator_text(self.handle_operator_text)
         self.backend.detach_robot_text(self.handle_robot_text)
         self.backend.detach_challenge_step(self.handle_challenge_step)
+        self.backend.detach_image(self.handle_image)
 
     def handle_operator_text(self, text):
         print "handle_operator_text({})".format(text)
@@ -79,6 +83,14 @@ class MessageForwarder(WebSocketHandler):
         print "handle_challenge_step({})".format(step)
 
         data = {"label": "challenge_step", "index": step}
+        data = json.dumps(data)
+
+        self.write_message(data)
+
+    def handle_image(self, image):
+        print "handle_image({})".format(len(image))
+
+        data = {"label": "image", "image": image}
         data = json.dumps(data)
 
         self.write_message(data)

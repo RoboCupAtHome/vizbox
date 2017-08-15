@@ -31,7 +31,8 @@
                         $next_active.prev().removeClass('activated');
                         break
                     case "image":
-                        $("#visualization_img").src = "data:image/png;base64," + window.btoa(json.image);
+                        console.log("Got image")
+                        $("#visualization_img").src = window.btoa(json.image);
                         break;
                 }
             };
