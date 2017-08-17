@@ -21,13 +21,13 @@ Currently, only a ROS backend is implemented:
 
 ### Subscriptions:
 
-* ```~operator_text std_msgs/String``` What the robot has heard the operator say
-* ```~robot_text std_msgs/String``` What the robot itself is saying
-* ```~challenge_step std_msgs/UInt32``` Active item index in the plan or action sequence the robot is executing. 
-* ```~image sensor_msgs/Image``` Image of what the robo sees or anything else interesting to the audience
+* ```operator_text std_msgs/String``` What the robot has heard the operator say
+* ```robot_text std_msgs/String``` What the robot itself is saying
+* ```challenge_step std_msgs/UInt32``` Active item index in the plan or action sequence the robot is executing. 
+* ```image sensor_msgs/Image``` Image of what the robo sees or anything else interesting to the audience
 
 ### Publications
-* ```~command std_msgs/String``` Command HTTP POSTed to the robot. 
+* ```command std_msgs/String``` Command HTTP POSTed to the robot. 
 
 TODO
 ----
