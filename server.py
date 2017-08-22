@@ -17,10 +17,6 @@ class ChallengeHandler(RequestHandler):
     def get(self):
         print "Rendering..."
         self.render("challenge.html",
-                    challenge="Help me Carry",
-                    story=["Get operator", "Follow to car", "Take bag", "Hear destination", "Find human", "Guide to car"],
-                    robot_text="OK, I will bring the bag to the kitchen",
-                    operator_text="Bring the bag to the kitchen",
                     visualization="Robot camera image"
                     )
 
