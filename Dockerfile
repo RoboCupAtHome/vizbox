@@ -12,8 +12,8 @@ RUN pip install -r requirements.txt
 
 ADD templates /templates
 ADD static /static
-ADD vizbox.py /
+ADD server.py /
 
 EXPOSE 8888
 
-CMD [ "python", "./vizbox.py" ]
+CMD [ "python", "./server.py" ]

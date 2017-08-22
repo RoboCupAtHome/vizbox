@@ -42,7 +42,7 @@ cd vizbox
 sudo pip install -r requirements.txt
 
 roscore # in separate terminal
-./vizbox image:=/usb_cam/image_raw # Remaps the image-topic to output of the USB cam, see below
+./server.py image:=/usb_cam/image_raw # Remaps the image-topic to output of the USB cam, see below
 ```
 
 Open [The web page on localhost](http://localhost:8888)

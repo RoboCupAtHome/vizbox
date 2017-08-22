@@ -7,6 +7,7 @@ from sensor_msgs.msg import Image
 from PIL import Image as pil_image
 import base64
 from StringIO import StringIO
+from vizbox.msg import Story
 
 
 class RosBackend(BackendBase):
