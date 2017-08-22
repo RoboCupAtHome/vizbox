@@ -33,3 +33,24 @@ TODO
 ----
 
 * Allow robot to push action sequence and challenge name to server. Allows for GPSR action sequences etc.
+
+Installation and try out
+-------
+```bash
+git clone https://github.com/LoyVanBeek/vizbox.git
+cd vizbox
+sudo pip install -r requirements.txt
+
+roscore # in separate terminal
+./vizbox image:=/usb_cam/image_raw # Remaps the image-topic to output of the USB cam, see below
+```
+
+Open [The web page on localhost](http://localhost:8888)
+
+To reproduce the the screenshot:
+```bash
+rostopic pub /robot_text std_msgs/String "data: 'Hello operator'" --once
+rostopic pub /operator_text std_msgs/String "data: 'Robot, follow me'" --once
+rostopic pub /robot_text std_msgs/String "data: 'OK, I will follow you'" --once;
+roslaunch usb_cam usb_cam-test.launch
+```
