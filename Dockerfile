@@ -12,6 +12,8 @@ RUN pip install -r requirements.txt
 
 ADD templates /templates
 ADD static /static
+ADD backendbase.py /
+ADD rosbackend.py /
 ADD server.py /
 
 EXPOSE 8888
