@@ -17,6 +17,7 @@ class BackendBase(object):
         self.on_robot_text = []
         self.on_challenge_step = []
         self.on_image = []
+        self.on_story = []
 
     def attach_operator_text(self, callback):
         self.on_operator_text += [callback]
@@ -54,3 +55,19 @@ class BackendBase(object):
         :return:
         """
         self.on_image.remove(callback)
+
+    def attach_story(self, callback):
+        """
+        Add a callback for when a Story is received
+        :param callback: function accepting a tuple of (title: str, storyline: [str])
+        :return:
+        """
+        self.on_story += [callback]
+
+    def detach_story(self, callback):
+        """
+        Remove a callback from when a Story is received
+        :param callback:
+        :return:
+        """
+        self.on_story.remove(callback)

@@ -50,6 +50,7 @@ class MessageForwarder(WebSocketHandler):
         self.backend.attach_robot_text(self.handle_robot_text)
         self.backend.attach_challenge_step(self.handle_challenge_step)
         self.backend.attach_image(self.handle_image)
+        self.backend.attach_story(self.handle_story)
 
         print("WebSocket opened")
 
@@ -62,6 +63,7 @@ class MessageForwarder(WebSocketHandler):
         self.backend.detach_robot_text(self.handle_robot_text)
         self.backend.detach_challenge_step(self.handle_challenge_step)
         self.backend.detach_image(self.handle_image)
+        self.backend.detach_story(self.handle_story)
 
     def handle_operator_text(self, text):
         print "handle_operator_text({})".format(text)
@@ -91,6 +93,16 @@ class MessageForwarder(WebSocketHandler):
         print "handle_image({})".format(len(image))
 
         data = {"label": "image", "image": image}
+        data = json.dumps(data)
+
+        self.write_message(data)
+
+    def handle_story(self, title_storyline):
+        print "handle_story({})".format(title_storyline)
+
+        title, storyline = title_storyline
+
+        data = {"label": "story", "title": title, "storyline": storyline}
         data = json.dumps(data)
 
         self.write_message(data)

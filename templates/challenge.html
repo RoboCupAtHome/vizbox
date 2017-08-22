@@ -34,6 +34,17 @@
                         console.log("Got image: '"+image+"'")
                         document.getElementById('visualization_img').setAttribute('src', image);
                         break;
+                    case "story":
+                        $("#title").text(json.title)
+
+                        console.log("Got story: '"+json+"'")
+
+                        $("#storyline").empty();
+                        $(json.storyline).each(function(index){
+                            console.log("Got line: '"+this+"'")
+                            $("#storyline").append('<li>' + this + '</li>');
+                        });
+                        break;
                 }
             };
             function send_to_ws() {
@@ -46,7 +57,7 @@
     </head>
     <body class="main">
         <div class="wrapper">
-            <div class="box header"><h1>{{challenge}}</h1></div>
+            <div class="box header"><h1 id="title">{{challenge}}</h1></div>
             <div class="box sidebar">
                 <ol id="storyline">
                     {% for line in story %}
