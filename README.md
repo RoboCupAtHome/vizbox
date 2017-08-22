@@ -49,8 +49,10 @@ Open [The web page on localhost](http://localhost:8888)
 
 To reproduce the the screenshot:
 ```bash
+roslaunch usb_cam usb_cam-test.launch # separate terminal
+rostopic pub /challenge_step std_msgs/UInt32 "data: 0" --once
 rostopic pub /robot_text std_msgs/String "data: 'Hello operator'" --once
 rostopic pub /operator_text std_msgs/String "data: 'Robot, follow me'" --once
 rostopic pub /robot_text std_msgs/String "data: 'OK, I will follow you'" --once;
-roslaunch usb_cam usb_cam-test.launch
+rostopic pub /challenge_step std_msgs/UInt32 "data: 1" --once
 ```
