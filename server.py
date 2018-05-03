@@ -137,10 +137,10 @@ if __name__ == "__main__":
         try:
             print "Listening..."
             app.listen(port, address)
-            rospy.logdebug("Listening on {addr}:{port}".format(addr=address, port=port))
+            print "Listening on http://{addr}:{port}".format(addr=address, port=port)
             connected = True
         except error as ex:
-            rospy.logerr("{ex}. Cannot start, trying in a bit".format(ex=ex))
+            print "{ex}. Cannot start, trying in a bit".format(ex=ex)
             rospy.sleep(1)
 
     print "Starting IOLoop"

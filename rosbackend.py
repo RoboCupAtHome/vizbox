@@ -28,7 +28,7 @@ class RosBackend(BackendBase):
 
         super(RosBackend, self).__init__()
         rospy.init_node("vizbox", log_level=rospy.INFO)
-        print "Node initialized"
+        rospy.logdebug("Node initialized")
 
         rospy.on_shutdown(shutdown_hook)
 
@@ -54,8 +54,6 @@ class RosBackend(BackendBase):
         self.cmd_pub.publish(command_text)
 
     def ros_image_to_base64(self, rosmsg):
-        print rosmsg.encoding, rosmsg.width, rosmsg.height, len(rosmsg.data)
-
         decoder = self.__encoding[rosmsg.encoding]
         return decoder(rosmsg)
 
