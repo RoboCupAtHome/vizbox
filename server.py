@@ -4,7 +4,7 @@ import json
 import signal
 from socket import error
 
-import rospy
+import time
 from tornado.ioloop import IOLoop
 from tornado.web import Application, RequestHandler, StaticFileHandler
 from tornado.websocket import WebSocketHandler
@@ -133,7 +133,7 @@ if __name__ == "__main__":
     print "Application instantiated"
 
     connected = False
-    while not connected and not rospy.is_shutdown():
+    while not connected:
         try:
             print "Listening..."
             app.listen(port, address)
@@ -141,7 +141,7 @@ if __name__ == "__main__":
             connected = True
         except error as ex:
             print "{ex}. Cannot start, trying in a bit".format(ex=ex)
-            rospy.sleep(1)
+            time.sleep(1)
 
     print "Starting IOLoop"
     IOLoop.instance().start()
