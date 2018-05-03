@@ -19,6 +19,17 @@ class BackendBase(object):
         self.on_image = []
         self.on_story = []
 
+        self._title = "Challenge"
+        self._storyline = ["Enter", "Do stuff", "Exit"]
+
+    @property
+    def title(self):
+        return self._title
+
+    @property
+    def storyline(self):
+        return self._storyline
+
     def attach_operator_text(self, callback):
         self.on_operator_text += [callback]
 

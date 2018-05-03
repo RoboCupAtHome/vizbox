@@ -47,6 +47,9 @@ class RosBackend(BackendBase):
 
         self.cmd_pub = rospy.Publisher("command", String, queue_size=1)
 
+        self._title = rospy.get_param("story/title", "Challenge")
+        self._storyline = rospy.get_param("story/storyline", ["Start"])
+
     def accept_command(self, command_text):
         self.cmd_pub.publish(command_text)
 

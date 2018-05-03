@@ -14,10 +14,15 @@ from rosbackend import RosBackend
 
 
 class ChallengeHandler(RequestHandler):
+    def initialize(self, backend):
+        self.backend = backend
+
     def get(self):
         print "Rendering..."
         self.render("challenge.html",
-                    visualization="Robot camera image"
+                    visualization="Robot camera image",
+                    title=self.backend.title,
+                    storyline=self.backend.storyline
                     )
 
 
@@ -117,7 +122,7 @@ if __name__ == "__main__":
 
     app = Application([
         (r"/ws", MessageForwarder, {'backend': backend}),
-        (r'/', ChallengeHandler),
+        (r'/', ChallengeHandler, {'backend': backend}),
         (r'/command', CommandReceiver, {'backend': backend}),
         (r'/static/(.*)', StaticFileHandler, {'path': 'static/'})],
         (r'/(favicon\.ico)', StaticFileHandler, {'path': 'static/favicon.ico'}),
