@@ -50,7 +50,7 @@ class RosBackend(BackendBase):
     def accept_command(self, command_text):
         self.cmd_pub.publish(command_text)
 
-    def ros_image_to_base64(self, rosmsg)
+    def ros_image_to_base64(self, rosmsg):
         print rosmsg.encoding, rosmsg.width, rosmsg.height, len(rosmsg.data)
 
         decoder = self.__encoding[rosmsg.encoding]
