@@ -2,7 +2,7 @@ from backendbase import BackendBase, call_callbacks_in
 
 import rospy
 from std_msgs.msg import String, UInt32
-from sensor_msgs.msg import CompressedImage
+from sensor_msgs.msg import Image, CompressedImage
 
 import cv2
 import numpy as np
@@ -35,12 +35,14 @@ class RosBackend(BackendBase):
         rospy.on_shutdown(shutdown_hook)
 
         self.__encoding = {'rgb8':self.rgba2base64,
-                           'bgr8':self.bgr8_2_base64}
+                           'bgr8':self.bgr8_2_base64,
+                           'compressed':self.compressed2base64}
 
         self.op_sub = rospy.Subscriber("operator_text", String, call_callbacks_in(self.on_operator_text, lambda rosmsg: rosmsg.data), queue_size=100)
         self.robot_sub = rospy.Subscriber("robot_text", String, call_callbacks_in(self.on_robot_text, lambda rosmsg: rosmsg.data), queue_size=100)
         self.step_sub = rospy.Subscriber("challenge_step", UInt32, call_callbacks_in(self.on_challenge_step, lambda rosmsg: rosmsg.data), queue_size=100)
-        self.image_sub = rospy.Subscriber("image", CompressedImage, call_callbacks_in(self.on_image, self.ros_image_to_base64), queue_size=100)
+        self.image_sub = rospy.Subscriber("image", Image, call_callbacks_in(self.on_image, self.ros_image_to_base64), queue_size=100)
+        self.compressed_image_sub = rospy.Subscriber("image/compressed", CompressedImage, call_callbacks_in(self.on_image, self.ros_image_to_base64), queue_size=100)
         
         try:
             self.story_sub = rospy.Subscriber("story", Story, call_callbacks_in(self.on_story, lambda rosmsg: (rosmsg.title, rosmsg.storyline)), queue_size=100)
@@ -56,7 +58,10 @@ class RosBackend(BackendBase):
         self.cmd_pub.publish(command_text)
 
     def ros_image_to_base64(self, rosmsg):
-        decoder = self.__encoding[rosmsg.encoding]
+        if hasattr(rosmsg, 'encoding'):
+            decoder = self.__encoding[rosmsg.encoding]
+        else:
+            decoder = self.__encoding['compressed']
         return decoder(rosmsg)
 
 
@@ -76,11 +81,11 @@ class RosBackend(BackendBase):
         return encoded
 
     @staticmethod
-    def compressed_rgba2base64(rosmsg):
+    def compressed2base64(rosmsg):
         length = len(rosmsg.data)
         img_np_arr = np.fromstring(rosmsg.data, np.uint8)
         flag = cv2.IMREAD_COLOR if cv2.__version__.split('.')[0] == '3' else cv2.CV_LOAD_IMAGE_COLOR
-        encoded_img = cv2.imdecode(img_np_arr, flag)
+        encoded_img = cv2.imdecode(img_np_arr, flag)[:,:,::-1]
         converted = pil_image.fromarray(encoded_img)
         string_buffer = StringIO()
         converted.save(string_buffer, "png")
