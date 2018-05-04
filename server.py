@@ -4,7 +4,7 @@ import json
 import signal
 from socket import error
 
-import rospy
+import time
 from tornado.ioloop import IOLoop
 from tornado.web import Application, RequestHandler, StaticFileHandler
 from tornado.websocket import WebSocketHandler
@@ -14,10 +14,15 @@ from rosbackend import RosBackend
 
 
 class ChallengeHandler(RequestHandler):
+    def initialize(self, backend):
+        self.backend = backend
+
     def get(self):
         print "Rendering..."
         self.render("challenge.html",
-                    visualization="Robot camera image"
+                    visualization="Robot camera image",
+                    title=self.backend.title,
+                    storyline=self.backend.storyline
                     )
 
 
@@ -117,7 +122,7 @@ if __name__ == "__main__":
 
     app = Application([
         (r"/ws", MessageForwarder, {'backend': backend}),
-        (r'/', ChallengeHandler),
+        (r'/', ChallengeHandler, {'backend': backend}),
         (r'/command', CommandReceiver, {'backend': backend}),
         (r'/static/(.*)', StaticFileHandler, {'path': 'static/'})],
         (r'/(favicon\.ico)', StaticFileHandler, {'path': 'static/favicon.ico'}),
@@ -128,15 +133,15 @@ if __name__ == "__main__":
     print "Application instantiated"
 
     connected = False
-    while not connected and not rospy.is_shutdown():
+    while not connected:
         try:
             print "Listening..."
             app.listen(port, address)
-            rospy.logdebug("Listening on {addr}:{port}".format(addr=address, port=port))
+            print "Listening on http://{addr}:{port}".format(addr=address, port=port)
             connected = True
         except error as ex:
-            rospy.logerr("{ex}. Cannot start, trying in a bit".format(ex=ex))
-            rospy.sleep(1)
+            print "{ex}. Cannot start, trying in a bit".format(ex=ex)
+            time.sleep(1)
 
     print "Starting IOLoop"
     IOLoop.instance().start()

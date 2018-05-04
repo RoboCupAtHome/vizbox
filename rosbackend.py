@@ -30,11 +30,12 @@ class RosBackend(BackendBase):
 
         super(RosBackend, self).__init__()
         rospy.init_node("vizbox", log_level=rospy.INFO)
-        print "Node initialized"
+        rospy.logdebug("Node initialized")
 
         rospy.on_shutdown(shutdown_hook)
 
-        self.__encoding = {'rgb8':self.rgba2base64}
+        self.__encoding = {'rgb8':self.rgba2base64,
+                           'bgr8':self.bgr8_2_base64}
 
         self.op_sub = rospy.Subscriber("operator_text", String, call_callbacks_in(self.on_operator_text, lambda rosmsg: rosmsg.data), queue_size=100)
         self.robot_sub = rospy.Subscriber("robot_text", String, call_callbacks_in(self.on_robot_text, lambda rosmsg: rosmsg.data), queue_size=100)
@@ -48,20 +49,57 @@ class RosBackend(BackendBase):
 
         self.cmd_pub = rospy.Publisher("command", String, queue_size=1)
 
+        self._title = rospy.get_param("story/title", "Challenge")
+        self._storyline = rospy.get_param("story/storyline", ["Start"])
+
     def accept_command(self, command_text):
         self.cmd_pub.publish(command_text)
 
     def ros_image_to_base64(self, rosmsg):
-        print rosmsg.format, len(rosmsg.data)
-        return self.__encoding['rgb8'](rosmsg)  # forcing encoding option at the moment
+        decoder = self.__encoding[rosmsg.encoding]
+        return decoder(rosmsg)
+
 
     @staticmethod
     def rgba2base64(rosmsg):
+        length = len(rosmsg.data)
+        bytes_needed = int(rosmsg.width * rosmsg.height * 3)
+        # print "encode: length={} width={}, heigth={}, bytes_needed={}".format(length, width, height, bytes_needed)
+
+        converted = pil_image.frombytes('RGB',
+                                        (rosmsg.width, rosmsg.height),
+                                        rosmsg.data)
+        string_buffer = StringIO()
+        converted.save(string_buffer, "png")
+        image_bytes = string_buffer.getvalue()
+        encoded = base64.standard_b64encode(image_bytes)
+        return encoded
+
+    @staticmethod
+    def compressed_rgba2base64(rosmsg):
         length = len(rosmsg.data)
         img_np_arr = np.fromstring(rosmsg.data, np.uint8)
         flag = cv2.IMREAD_COLOR if cv2.__version__.split('.')[0] == '3' else cv2.CV_LOAD_IMAGE_COLOR
         encoded_img = cv2.imdecode(img_np_arr, flag)
         converted = pil_image.fromarray(encoded_img)
+        string_buffer = StringIO()
+        converted.save(string_buffer, "png")
+        image_bytes = string_buffer.getvalue()
+        encoded = base64.standard_b64encode(image_bytes)
+        return encoded
+
+    @staticmethod
+    def bgr8_2_base64(rosmsg):
+        # Decode image into RGB rigt because PIL doesn't know BGR.
+        # Below we simply reorder the channels
+        converted_rgb = pil_image.frombytes('RGB',
+                                        (rosmsg.width, rosmsg.height),
+                                        rosmsg.data)
+
+        # Re-order channels to match RGB what we encoded :-).
+        b,g,r = converted_rgb.split()
+        converted = pil_image.merge("RGB", (b,g,r))
+
         string_buffer = StringIO()
         converted.save(string_buffer, "png")
         image_bytes = string_buffer.getvalue()
