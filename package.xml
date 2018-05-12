@@ -12,6 +12,9 @@
   <run_depend>rospy</run_depend>
   <run_depend>std_msgs</run_depend>
   <run_depend>message_runtime</run_depend>
+  <run_depend>python-tornado</run_depend>
+  <run_depend>python-pillow</run_depend>
+
   
   <build_depend>rospy</build_depend>
 </package>
