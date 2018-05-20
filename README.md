@@ -56,3 +56,11 @@ rostopic pub /operator_text std_msgs/String "data: 'Robot, follow me'" --once
 rostopic pub /robot_text std_msgs/String "data: 'OK, I will follow you'" --once;
 rostopic pub /challenge_step std_msgs/UInt32 "data: 1" --once
 ```
+
+POST commands
+=============
+Use 
+```bash
+http -f POST localhost:8888/command command="Robot, follow me"
+```
+(Using the very handy [HTTPie](https://httpie.org/) utility) to get a publication on the ```/command``` topic
