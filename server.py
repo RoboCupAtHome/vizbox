@@ -12,6 +12,9 @@ from tornado.websocket import WebSocketHandler
 from backendbase import BackendBase
 from rosbackend import RosBackend
 
+CMD_BTN1 = "Next Step"
+CMD_BTN2 = "Stop"
+
 
 class ChallengeHandler(RequestHandler):
     def initialize(self, backend):
@@ -25,6 +28,15 @@ class ChallengeHandler(RequestHandler):
                     storyline=self.backend.storyline
                     )
 
+    def post(self):
+        if self.get_argument("btn") == "1":
+            print('btn1 pushed')
+            self.backend.btn_pushed(CMD_BTN1)
+
+        if self.get_argument("btn") == "2":
+            print('btn2 pushed')
+            self.backend.btn_pushed(CMD_BTN2)
+
 
 class CommandReceiver(RequestHandler):
     def initialize(self, backend):
@@ -34,6 +46,8 @@ class CommandReceiver(RequestHandler):
         command = self.get_argument("command")
         self.backend.accept_command(command)
         print(command)
+
+
 
 
 class MessageForwarder(WebSocketHandler):
@@ -69,7 +83,7 @@ class MessageForwarder(WebSocketHandler):
     def handle_operator_text(self, text):
         print "handle_operator_text({})".format(text)
 
-        data = {"label": "operator_text", "text": text}
+        data = {"label": "operator_text", "text": "Operator : "+text}
         data = json.dumps(data)
 
         self.write_message(data)
@@ -77,7 +91,7 @@ class MessageForwarder(WebSocketHandler):
     def handle_robot_text(self, text):
         print "handle_robot_text({})".format(text)
 
-        data = {"label": "robot_text", "text": text}
+        data = {"label": "robot_text", "text": "Robot : "+text}
         data = json.dumps(data)
 
         self.write_message(data)

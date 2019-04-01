@@ -44,19 +44,25 @@ class RosBackend(BackendBase):
 
         self.image_sub = rospy.Subscriber("image", Image, call_callbacks_in(self.on_image, self.ros_image_to_base64), queue_size=1)
         self.compressed_image_sub = rospy.Subscriber("image/compressed", CompressedImage, call_callbacks_in(self.on_image, self.ros_image_to_base64), queue_size=1)
-        
+
         try:
             self.story_sub = rospy.Subscriber("story", Story, call_callbacks_in(self.on_story, lambda rosmsg: (rosmsg.title, rosmsg.storyline)), queue_size=100)
         except NameError, e:
             rospy.logerr("To dynamically define a Story, catkin_make this package")
 
         self.cmd_pub = rospy.Publisher("command", String, queue_size=1)
+        self.btn_pub = rospy.Publisher("next_step", String, queue_size=1)
 
         self._title = rospy.get_param("story/title", "Challenge")
         self._storyline = rospy.get_param("story/storyline", ["Start"])
 
     def accept_command(self, command_text):
         self.cmd_pub.publish(command_text)
+
+
+    def btn_pushed(self, command_text):
+        self.btn_pub.publish(command_text)
+
 
     def ros_image_to_base64(self, rosmsg):
         if hasattr(rosmsg, 'encoding'):
