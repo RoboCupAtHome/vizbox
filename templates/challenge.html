@@ -2,84 +2,53 @@
 <html>
     <head>
         <link rel="stylesheet" href="static/stylesheets/style.css">
-        <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
-        <!-- <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script> -->
-        <script type="text/javascript" charset="utf-8">
-            var ws = new WebSocket("ws://localhost:8888/ws");
-
-            ws.onmessage = function (evt) {
-                var json = JSON.parse(evt.data);
-
-                switch(json.label)
-                {
-                    case "operator_text":
-                    case "robot_text":
-                        var subtitles = document.getElementById("subtitles");
-                        var txt = document.createElement("li");
-                        txt.appendChild(document.createTextNode(json.text));
-                        txt.setAttribute("class", json.label); // added line
-                        subtitles.appendChild(txt);
-                        
-                        var footer = $(".footer");
-                        footer.animate({ scrollTop: footer.prop("scrollHeight") - footer.height() }, 100);
-                        break
-                    case "challenge_step":
-                        $old = $(".activated").removeClass('activated');
-
-                        $next_active = $('#storyline li').eq(json.index)
-                        $next_active.addClass('activated');
-                        break
-                    case "image":
-                        var image = "data:image/png;base64," + json.image;
-                        console.log("Got image: '"+image+"'")
-                        document.getElementById('visualization_img').setAttribute('src', image);
-                        break;
-                    case "story":
-                        $("#title").text(json.title)
-
-                        console.log("Got story: '"+json+"'")
-
-                        $("#storyline").empty();
-                        $(json.storyline).each(function(index){
-                            console.log("Got line: '"+this+"'")
-                            $("#storyline").append('<li>' + this + '</li>');
-                        });
-                        break;
-                }
-            };
-            function send_to_ws() {
-                var formdata = $( "#command_enter_form" ).serialize();
-                ws.send(formdata);
-            }
-            $("#submit").on("click", send_to_ws);
-        </script>
+        <script src="static/scripts/jquery-3.3.1.min.js"></script>
+        <link rel="stylesheet" href="static/stylesheets/bootstrap.min.css">
+        <script src="static/scripts/bootstrap.min.js"></script>
+        
+        <link rel="shortcut icon" href="static/favicon.ico">    
 
     </head>
     <body class="main">
-        <div class="wrapper">
-            <div class="box header"><h1 id="title">{{title}}</h1></div>
-            <div class="box sidebar">
-                <ol id="storyline">
-                      {% for line in storyline %}
-                        {% block line %}
-                          <li>{{line}}</li>
-                        {% end %}
-                      {% end %}
-                </ol>
-            </div>
-            <div class="box content">
-                {{visualization}}
-                <br>
-                <img    id="visualization_img"
-                        src="https://www.w3schools.com/html/html5.gif">
-            </div>
-            <div class="box footer">
-                <ul id="subtitles"">
-                    <!-- Dummies to test style -->
-                    <!-- <li class="operator_text subtitle-line">Operator</li> -->
-                    <!-- <li class="robot_text subtitle-line">Robot</li> -->
-                </ul>
-            </div>
+        
+        <div class="header">
+            <h1 id="title">{{title}}</h1>
+            <hr style="border-color: white;">
         </div>
+
+        <div class="content center">
+            {{visualization}}
+            <br>
+            <img    id="visualization_img"
+                    src="https://www.w3schools.com/html/html5.gif">
+        </div>
+
+        <div class="sidebar">
+            <h2>Event</h2>
+            <ol id="storyline">
+                  {% for line in storyline %}
+                    {% block line %}
+                      <li>{{line}}</li>
+                    {% end %}
+                  {% end %}
+            </ol>
+        </div>
+
+        <div class="footer-button center">
+    			<div  class="btn-group-vertical" style="width:75%;">
+    			    <button type="button" id="btn1" class="btn btn-primary ">Next Step</button>
+    			    <button type="button" id="btn2" class="btn btn-danger ">Stop</button>
+      			</div>
+    		</div>
+
+    		<div class="footer-text">
+    			<ul id="subtitles">
+                        <!-- Dummies to test style -->
+                    <!-- <li class="robot_text subtitle-line">Robot : Ok, I will follow you</li>
+                    <li class="operator_text subtitle-line">Operator : Follow me</li> -->
+                   
+                </ul>
+    		</div>
+        <script src="static/scripts/script.js"></script>
     </body>
 </html>

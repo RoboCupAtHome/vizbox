@@ -1,90 +1,82 @@
-html, body {
+body {
     height: 100%;
-    width: 100%
-    margin: 0px;
-    padding: 0px;
+    margin: 0;
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,"Fira Sans","Droid Sans","Helvetica Neue",sans-serif;
     font-size: 20pt;
 }
-/*
-fresh: #4abdac;
-vermillion: #fc4a1a;
-sunshine: #f7b733;
-clean: #dfdce3;
-*/
 
-/*
-From https://www.awwwards.com/sites/van-gogh-museum
-sunflowers: #ffd728
-starry: #0188C0;
-irises: #00895F;
-evening: #312F32;
-#012F7F
-*/
+#subtitle{
+	text-align: center;
+}
 
 * {
     margin: 0;
 }
 
-.sidebar {
-    grid-area: sidebar;
-    align-content: flex-start;
-    background-color: #30426A;
+.content {
+
+    width:70%;
+    height:80%;
+    right:0;
+    position:absolute;
+
     color: #E9EDEE;
     padding: 10px;
 }
 
-.content {
-    grid-area: content;
-    position: relative;
-    text-align: center; 
-    align-items: center;
+.header {
+    width:30%;
+  	height:20%;
+  	position:absolute;
+  	left:0;
+  	background-color:  #30426A;
+  	color: #E9EDEE;
+  	text-align: center;
+}
+
+.footer-button{
+	height:20%;
+	width:40%;
+	bottom:0;
+	right:0;
+	position:absolute;
+	background-color:  #30426A;
+	color: #E9EDEE;
+}
+
+#btn1 {
+	margin-bottom: 10px;
+}
+
+.center {
+	align-items: center;
     display: flex;
     flex-direction: column;
     justify-content: center;
     vertical-align: middle;
-
-    background-color: #F3F3F3;
-    color: #312F32;
-
-}
-
-.header {
-    grid-area: header;
-    align-content: center;
     text-align: center;
-    vertical-align: middle;
-    background-color: #2C3E62;
-    color: #E9EDEE;
-    line-height: 200px;  /*Same height as the corresponding grid row*/
 }
 
-.footer {
-    grid-area: footer;
-    align-content: center;
-    background-color: #30426A;
-    color: #E9EDEE;
+.footer-text{
+	width:40%;
+	height: 20%;
+	bottom: 0;
+	position: absolute;
+	margin-left: 20%;
+	background-color:  #30426A;
+	color: #E9EDEE;
     overflow-y: auto;
-    font-weight: bolder;
+
 }
 
-.wrapper {
-    min-height: 100%;
-    display: grid;
-    /*grid-gap: 5px;*/
-    grid-template-columns: 25% auto;
-    grid-template-rows: 200px auto 200px;
-    grid-template-areas:
-    "header  content"
-    "sidebar content"
-    "sidebar footer";
-    background-color: #F3F3F3;
-    color: #312F32;
-}
-
-.box {
-    /*color: #fff;*/
-    /*padding: 5px;*/
+.sidebar{
+	height:80%;
+	width:30%;
+	float:left;
+	bottom:0;
+	position: absolute;
+	background-color:  #30426A;
+	color: #E9EDEE;
 }
 
 .subtitle-line {
@@ -103,4 +95,24 @@ li.robot_text {
 
 li.activated {
     font-weight: bolder;
+}
+
+::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	border-radius: 10px;
+	background-color: #30426A;
+}
+
+::-webkit-scrollbar
+{
+	width: 12px;
+	background-color: #30426A;
+}
+
+::-webkit-scrollbar-thumb
+{
+	border-radius: 10px;
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+	background-color: SteelBlue;
 }
