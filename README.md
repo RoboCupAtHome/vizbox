@@ -10,7 +10,7 @@ The main page shows
 
 Additionally, the server accepts HTTP POSTs to which a command sentence can be submitted on /command
 
-![Screenshot](https://github.com/LoyVanBeek/vizbox/blob/master/screenshot.png)
+![Screenshot](https://github.com/RoboCupAtHome/vizbox/blob/master/screenshot.png)
 
 Backends
 --------
@@ -37,7 +37,7 @@ TODO
 Installation and try out
 -------
 ```bash
-git clone https://github.com/LoyVanBeek/vizbox.git
+git clone https://github.com/RoboCupAtHome/vizbox.git
 cd vizbox
 sudo pip install -r requirements.txt
 
